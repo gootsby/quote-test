@@ -1,0 +1,2074 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>pole simon 견적서</title>
+    <style>
+      :root {
+        color: #11110f;
+        background: #e7e4dc;
+        --ui-bg: #f5f5f7;
+        --ui-surface: rgba(255, 255, 255, 0.86);
+        --ui-surface-strong: #ffffff;
+        --ui-control: rgba(118, 118, 128, 0.12);
+        --ui-control-hover: rgba(118, 118, 128, 0.18);
+        --ui-border: rgba(60, 60, 67, 0.18);
+        --ui-text: #1d1d1f;
+        --ui-secondary: #6e6e73;
+        --ui-blue: #0071e3;
+        --ui-blue-dark: #005bb5;
+        font-family: "Pretendard", "Noto Sans KR", "Apple SD Gothic Neo", Arial, sans-serif;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-width: 320px;
+        height: 100vh;
+        overflow: hidden;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      button,
+      input,
+      select,
+      textarea {
+        font: inherit;
+      }
+
+      button {
+        cursor: pointer;
+      }
+
+      .app-shell {
+        display: grid;
+        grid-template-columns: minmax(390px, 480px) minmax(720px, 1fr);
+        height: 100vh;
+        min-height: 0;
+        overflow: hidden;
+        background:
+          linear-gradient(90deg, rgba(17, 17, 15, 0.055) 1px, transparent 1px),
+          linear-gradient(0deg, rgba(17, 17, 15, 0.055) 1px, transparent 1px),
+          #e7e4dc;
+        background-size: 24px 24px;
+      }
+
+      .editor-panel {
+        min-height: 0;
+        height: 100%;
+        overflow: auto;
+        padding: 24px;
+        scrollbar-gutter: stable;
+        border-right: 1px solid var(--ui-border);
+        background:
+          linear-gradient(180deg, rgba(255, 255, 255, 0.72), rgba(245, 245, 247, 0.94)),
+          var(--ui-bg);
+      }
+
+      .panel-header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 18px;
+        margin-bottom: 18px;
+      }
+
+      .eyebrow {
+        margin: 0 0 7px;
+        color: var(--ui-secondary);
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      h1 {
+        margin: 0;
+        color: var(--ui-text);
+        font-size: 30px;
+        font-weight: 760;
+        line-height: 1.05;
+      }
+
+      .actions {
+        display: grid;
+        gap: 8px;
+      }
+
+      .primary-action,
+      .ghost-action,
+      .text-action {
+        min-height: 34px;
+        border: 1px solid transparent;
+        border-radius: 8px;
+        background: var(--ui-blue);
+        color: #fff;
+        padding: 0 14px;
+        font-size: 13px;
+        font-weight: 720;
+        white-space: nowrap;
+        transition:
+          background 140ms ease,
+          box-shadow 140ms ease,
+          transform 140ms ease;
+      }
+
+      .ghost-action {
+        border-color: var(--ui-border);
+        background: var(--ui-surface-strong);
+        color: var(--ui-blue);
+      }
+
+      .primary-action:hover {
+        background: var(--ui-blue-dark);
+      }
+
+      .ghost-action:hover,
+      .serial-control button:hover {
+        background: var(--ui-control-hover);
+      }
+
+      .text-action {
+        min-height: auto;
+        border: 0;
+        background: transparent;
+        color: #ff3b30;
+        padding: 0;
+        font-size: 12px;
+      }
+
+      .panel-section {
+        min-width: 0;
+        overflow: hidden;
+        margin: 0 0 14px;
+        padding: 16px;
+        border: 1px solid var(--ui-border);
+        border-radius: 8px;
+        background: var(--ui-surface);
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.025);
+        backdrop-filter: blur(18px);
+      }
+
+      .section-title {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 12px;
+        color: var(--ui-text);
+        font-size: 13px;
+        font-weight: 760;
+      }
+
+      .section-title .ghost-action {
+        flex: 0 0 auto;
+      }
+
+      .field-grid {
+        display: grid;
+        min-width: 0;
+        gap: 10px;
+      }
+
+      .field-grid.two {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .field {
+        display: grid;
+        min-width: 0;
+        gap: 7px;
+      }
+
+      .field span {
+        color: var(--ui-secondary);
+        font-size: 11px;
+        font-weight: 680;
+      }
+
+      .field input,
+      .field select,
+      .field textarea {
+        min-width: 0;
+        width: 100%;
+        min-height: 40px;
+        border: 1px solid transparent;
+        border-radius: 8px;
+        background: var(--ui-control);
+        color: var(--ui-text);
+        padding: 10px 12px;
+        outline: none;
+        transition:
+          background 140ms ease,
+          border-color 140ms ease,
+          box-shadow 140ms ease;
+      }
+
+      .serial-control {
+        display: grid;
+        grid-template-columns: 40px 1fr 40px;
+        gap: 6px;
+      }
+
+      .serial-control button {
+        min-height: 40px;
+        border: 1px solid transparent;
+        border-radius: 8px;
+        background: var(--ui-control);
+        color: var(--ui-blue);
+        font-size: 18px;
+        font-weight: 760;
+        line-height: 1;
+      }
+
+      .serial-control input {
+        text-align: center;
+      }
+
+      .clearable-input {
+        position: relative;
+        display: grid;
+      }
+
+      .clearable-input input {
+        padding-right: 42px;
+      }
+
+      .clear-field-button {
+        position: absolute;
+        top: 50%;
+        right: 6px;
+        width: 28px;
+        height: 28px;
+        min-height: 28px;
+        transform: translateY(-50%);
+        border: 0;
+        border-radius: 999px;
+        background: transparent;
+        color: var(--ui-secondary);
+        padding: 0;
+        font-size: 18px;
+        font-weight: 680;
+        line-height: 1;
+      }
+
+      .clear-field-button:hover {
+        background: rgba(60, 60, 67, 0.12);
+      }
+
+      .clear-field-button[hidden] {
+        display: none;
+      }
+
+      .field select {
+        appearance: none;
+        background-image: linear-gradient(45deg, transparent 50%, var(--ui-secondary) 50%),
+          linear-gradient(135deg, var(--ui-secondary) 50%, transparent 50%);
+        background-position:
+          calc(100% - 15px) 16px,
+          calc(100% - 10px) 16px;
+        background-size: 5px 5px, 5px 5px;
+        background-repeat: no-repeat;
+      }
+
+      .field input::placeholder,
+      .field textarea::placeholder {
+        color: rgba(60, 60, 67, 0.44);
+      }
+
+      .field textarea {
+        min-height: 74px;
+        resize: vertical;
+      }
+
+      .address-field {
+        grid-template-columns: 1fr;
+      }
+
+      .address-field span {
+        grid-column: 1 / -1;
+      }
+
+      .address-field textarea {
+        min-height: 74px;
+      }
+
+      .field input:focus,
+      .field select:focus,
+      .field textarea:focus {
+        border-color: rgba(0, 113, 227, 0.55);
+        background: #fff;
+        box-shadow: 0 0 0 4px rgba(0, 113, 227, 0.16);
+      }
+
+      .item-editor-list {
+        display: grid;
+        min-width: 0;
+        gap: 12px;
+      }
+
+      .item-editor {
+        display: grid;
+        min-width: 0;
+        width: 100%;
+        gap: 12px;
+        padding: 14px;
+        border: 1px solid var(--ui-border);
+        border-radius: 8px;
+        background: var(--ui-surface-strong);
+      }
+
+      .item-editor-top {
+        display: flex;
+        min-width: 0;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+
+      .item-editor-top strong {
+        margin-right: auto;
+        color: var(--ui-text);
+        font-size: 13px;
+        font-weight: 760;
+      }
+
+      .discount-editor-list {
+        display: grid;
+        min-width: 0;
+        width: 100%;
+        gap: 8px;
+        margin-top: 2px;
+        padding: 12px;
+        border: 1px solid var(--ui-border);
+        border-radius: 8px;
+        background: rgba(245, 245, 247, 0.82);
+      }
+
+      .discount-editor {
+        display: grid;
+        min-width: 0;
+        grid-template-columns: 74px minmax(0, 1fr) auto;
+        gap: 8px;
+        align-items: end;
+      }
+
+      .discount-editor .discount-title-field {
+        grid-column: 1 / -1;
+      }
+
+      .discount-editor .discount-value-field {
+        grid-column: 2 / -1;
+      }
+
+      .discount-editor .field {
+        gap: 4px;
+      }
+
+      .discount-editor .field span {
+        font-size: 11px;
+      }
+
+      .discount-summary {
+        color: var(--ui-secondary);
+        font-size: 12px;
+        font-weight: 720;
+      }
+
+      .discount-result {
+        min-height: 38px;
+        display: flex;
+        align-items: center;
+        color: var(--ui-secondary);
+        font-size: 11px;
+        font-weight: 720;
+        line-height: 1.35;
+      }
+
+      .discount-editor .discount-result {
+        grid-column: 1 / 3;
+      }
+
+      .toggle {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        color: var(--ui-secondary);
+        font-size: 12px;
+        font-weight: 720;
+      }
+
+      .rounding-options {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        min-width: 0;
+        gap: 8px;
+      }
+
+      .rounding-section {
+        margin-top: 24px;
+      }
+
+      .rounding-options label {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        min-height: 36px;
+        border: 1px solid transparent;
+        border-radius: 8px;
+        background: var(--ui-control);
+        padding: 0 10px;
+        color: var(--ui-secondary);
+        font-size: 12px;
+        font-weight: 720;
+      }
+
+      .rounding-options label.is-disabled {
+        opacity: 0.42;
+      }
+
+      .customer-fields[hidden] {
+        display: none;
+      }
+
+      .preview-zone {
+        min-width: 0;
+        min-height: 0;
+        height: 100%;
+        overflow: auto;
+        padding: 34px;
+        display: grid;
+        place-items: start center;
+      }
+
+      .a4-page {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        width: 210mm;
+        min-height: 297mm;
+        padding: 17mm;
+        background: #fff;
+        box-shadow: 0 24px 70px rgba(25, 24, 20, 0.2);
+        overflow: hidden;
+        --quote-accent: #0071e3;
+        --quote-line: #1d1d1f;
+        --quote-soft-line: rgba(29, 29, 31, 0.38);
+      }
+
+      .a4-page::before {
+        display: none;
+      }
+
+      .quote-header,
+      .party-grid,
+      .items-section,
+      .quote-footer {
+        position: relative;
+      }
+
+      .quote-header {
+        display: grid;
+        grid-template-columns: 1fr 58mm;
+        align-items: start;
+        gap: 10mm;
+        min-height: 22mm;
+        padding: 0 0 7mm;
+        border-bottom: 1.2mm solid var(--quote-line);
+      }
+
+      .quote-identity {
+        display: flex;
+        align-content: start;
+        align-items: flex-start;
+      }
+
+      .quote-title {
+        display: none;
+      }
+
+      .brand-mark {
+        display: flex;
+        align-items: flex-start;
+        width: 66mm;
+        height: 22mm;
+      }
+
+      .brand-mark img {
+        display: block;
+        width: auto;
+        height: 100%;
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+        object-position: left top;
+      }
+
+      .quote-meta {
+        display: grid;
+        gap: 2mm;
+        align-content: space-between;
+        justify-items: end;
+        box-sizing: border-box;
+        height: 22mm;
+        padding-top: 0;
+        border-top: 0;
+      }
+
+      .quote-meta div {
+        display: block;
+        min-height: auto;
+        border-bottom: 0;
+        text-align: right;
+      }
+
+      .quote-meta span,
+      .quote-meta strong {
+        display: block;
+        padding: 0;
+      }
+
+      .quote-meta span {
+        background: transparent;
+        color: #6e6e73;
+        font-size: 10px;
+        font-weight: 650;
+        text-transform: none;
+      }
+
+      .quote-meta strong {
+        margin-top: 1mm;
+        color: #000;
+        font-size: 11.5px;
+        font-weight: 850;
+        line-height: 1.2;
+        overflow-wrap: anywhere;
+      }
+
+      .party-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12mm;
+        margin: 0 0 12mm;
+        padding: 4mm 0;
+        border-bottom: 0.35mm solid var(--quote-line);
+      }
+
+      .party-block {
+        display: block;
+        border: 0;
+      }
+
+      .party-heading {
+        display: block;
+        margin: 0 0 2mm;
+        border-right: 0;
+        background: transparent;
+        color: #000;
+        font-size: 11px;
+        font-weight: 700;
+        writing-mode: horizontal-tb;
+      }
+
+      .party-row {
+        display: block;
+        min-height: 0;
+        border-bottom: 0;
+      }
+
+      .party-row:last-child {
+        border-bottom: 0;
+      }
+
+      .party-label,
+      .party-value {
+        display: inline;
+        min-width: 0;
+        padding: 0;
+        font-size: 10.5px;
+        line-height: 1.18;
+      }
+
+      .party-label {
+        display: none;
+        background: transparent;
+        font-weight: 700;
+      }
+
+      .party-value {
+        overflow-wrap: anywhere;
+        font-weight: 520;
+      }
+
+      .party-row + .party-row {
+        margin-top: 0.1mm;
+      }
+
+      .party-value.is-note {
+        color: #6e6e73;
+        font-size: 9.5px;
+        font-weight: 650;
+      }
+
+      .items-section {
+        flex: 1;
+      }
+
+      .table-head {
+        display: grid;
+        grid-template-columns: 1fr 30mm 14mm 38mm;
+        gap: 5mm;
+        min-height: 12mm;
+        align-items: center;
+        border-top: 1.2mm solid var(--quote-line);
+        border-bottom: 0.25mm solid var(--quote-line);
+        background: #fff;
+        color: #000;
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: none;
+      }
+
+      .table-head span {
+        padding: 0;
+      }
+
+      .table-head span:last-child {
+        text-align: right;
+      }
+
+      .table-head span:nth-child(2),
+      .table-head span:nth-child(3) {
+        text-align: center;
+      }
+
+      .items-list {
+        display: grid;
+        gap: 0;
+        padding-top: 0;
+      }
+
+      .quote-item {
+        display: grid;
+        grid-template-columns: 1fr 30mm 14mm 38mm;
+        gap: 5mm;
+        align-items: start;
+        padding: 4mm 0;
+        border-bottom: 0.22mm solid var(--quote-soft-line);
+      }
+
+      .quote-item.discount-row {
+        padding: 1mm 0 3.5mm 5mm;
+        color: #1d1d1f;
+        background: #fff;
+        border-bottom: 0;
+      }
+
+      .quote-item.has-discounts {
+        padding-bottom: 1.4mm;
+        border-bottom: 0;
+      }
+
+      .quote-item.discount-row.last-discount {
+        border-bottom: 0.22mm solid var(--quote-soft-line);
+      }
+
+      .quote-item.discount-row.has-total {
+        row-gap: 2mm;
+      }
+
+      .quote-item p {
+        margin: 0;
+        font-size: 13px;
+        font-weight: 650;
+        line-height: 1.38;
+      }
+
+      .quote-item span {
+        display: block;
+        margin-top: 1.2mm;
+        color: #6e6e73;
+        font-size: 12px;
+        font-weight: 480;
+      }
+
+      .quote-item .item-qty {
+        margin-top: 0;
+        color: #000;
+        font-size: 12px;
+        font-weight: 650;
+        line-height: 1.38;
+        text-align: center;
+        white-space: nowrap;
+      }
+
+      .quote-item .item-price {
+        margin-top: 0;
+        color: #000;
+        font-size: 12px;
+        font-weight: 650;
+        line-height: 1.38;
+        text-align: center;
+        white-space: nowrap;
+      }
+
+      .quote-item strong {
+        font-size: 13px;
+        font-weight: 760;
+        text-align: right;
+        white-space: nowrap;
+      }
+
+      .quote-item.has-discounts .item-subtotal {
+        color: #9a9aa0;
+        text-decoration: line-through;
+        text-decoration-thickness: 1px;
+        text-decoration-color: #6e6e73;
+      }
+
+      .quote-item.discount-row p,
+      .quote-item.discount-row strong {
+        font-size: 11px;
+        font-weight: 850;
+      }
+
+      .quote-item.discount-row div {
+        grid-column: 1 / 4;
+      }
+
+      .quote-item.discount-row strong {
+        grid-column: 4;
+      }
+
+      .quote-item .discount-applied-total {
+        grid-column: 4;
+        color: #000;
+        font-size: 13px;
+        font-weight: 760;
+        line-height: 1.2;
+        text-align: right;
+        white-space: nowrap;
+      }
+
+      .quote-item.discount-row p::before {
+        content: "- ";
+      }
+
+      .quote-item.is-highlight {
+        padding: 4mm 0;
+        background: #fff;
+        border-left: 0;
+      }
+
+      .quote-item.is-highlight p {
+        font-size: 13px;
+      }
+
+      .quote-footer {
+        display: grid;
+        grid-template-columns: 1fr 58mm;
+        gap: 6mm;
+        align-items: stretch;
+        margin-top: auto;
+        padding-top: 4mm;
+        border-top: 1.2mm solid var(--quote-line);
+      }
+
+      .bank-box {
+        display: grid;
+        align-content: start;
+        grid-template-rows: auto auto 1fr;
+        row-gap: 2.2mm;
+        height: 24mm;
+        min-height: 24mm;
+        border-bottom: 0;
+        padding: 0;
+      }
+
+      .bank-box span,
+      .total-box span {
+        font-size: 15px;
+        font-weight: 700;
+        text-transform: none;
+      }
+
+      .bank-box strong {
+        font-size: 12px;
+        font-weight: 520;
+        line-height: 1.1;
+      }
+
+      .total-box {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: auto auto 1fr;
+        align-content: start;
+        gap: 2.2mm 3mm;
+        height: 24mm;
+        min-height: 24mm;
+        border-left: 0;
+        border-bottom: 0;
+        background: #fff;
+        padding: 0;
+      }
+
+      .total-box strong {
+        color: #000;
+        font-size: 15px;
+        font-weight: 700;
+        line-height: 1.1;
+        text-align: right;
+      }
+
+      .total-box .total-label {
+        font-size: 15px;
+      }
+
+      .total-box .tax-label,
+      .total-box .tax-value {
+        color: #1d1d1f;
+        font-size: 12px;
+        font-weight: 620;
+      }
+
+      .total-box .tax-value {
+        text-align: right;
+      }
+
+      .total-note {
+        grid-column: 1 / -1;
+        justify-self: end;
+        min-height: 12px;
+        color: #000;
+        font-size: 9px;
+        font-weight: 850;
+      }
+
+      .notice {
+        grid-column: 1 / -1;
+        margin: 4mm 0 0;
+        font-size: 10px;
+        font-weight: 800;
+        line-height: 1.5;
+      }
+
+      @media (max-width: 1180px) {
+        body {
+          height: auto;
+          min-height: 100vh;
+          overflow: auto;
+        }
+
+        .app-shell {
+          grid-template-columns: 1fr;
+          height: auto;
+          min-height: 100vh;
+          overflow: visible;
+        }
+
+        .editor-panel {
+          min-height: 0;
+          height: auto;
+          border-right: 0;
+          border-bottom: 1px solid #c9c5bb;
+        }
+
+        .preview-zone {
+          height: auto;
+          min-height: 100vh;
+          justify-content: start;
+        }
+      }
+
+      @media (max-width: 760px) {
+        .editor-panel,
+        .preview-zone {
+          padding: 18px;
+        }
+
+        .field-grid.two {
+          grid-template-columns: 1fr;
+        }
+
+        .a4-page {
+          transform: scale(0.48);
+          transform-origin: top left;
+          margin-bottom: -154mm;
+        }
+      }
+
+      @page {
+        size: A4;
+        margin: 0;
+      }
+
+      @media print {
+        html,
+        body {
+          width: 210mm;
+          height: auto;
+          min-height: 297mm;
+          margin: 0;
+          padding: 0;
+          background: #fff;
+          overflow: visible;
+        }
+
+        .app-shell {
+          display: block;
+          width: 210mm;
+          height: auto;
+          min-height: 297mm;
+          background: #fff;
+        }
+
+        .editor-panel {
+          display: none;
+        }
+
+        .preview-zone {
+          display: block;
+          width: 210mm;
+          height: auto;
+          min-height: 297mm;
+          overflow: visible;
+          padding: 0;
+        }
+
+        .a4-page {
+          width: 210mm;
+          height: auto;
+          min-height: 297mm;
+          max-height: none;
+          margin: 0;
+          padding: 18mm;
+          transform: none;
+          box-shadow: none;
+          overflow: visible;
+          break-after: auto;
+          page-break-after: auto;
+          print-color-adjust: exact;
+          -webkit-print-color-adjust: exact;
+        }
+
+        .quote-header,
+        .party-grid,
+        .table-head,
+        .quote-item,
+        .quote-footer {
+          break-inside: avoid;
+          page-break-inside: avoid;
+        }
+
+        .items-section {
+          flex: initial;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="app-shell">
+      <aside class="editor-panel" aria-label="견적서 편집">
+        <div class="panel-header">
+          <div>
+            <p class="eyebrow">Quote Builder</p>
+            <h1>견적서 편집</h1>
+          </div>
+          <div class="actions">
+            <button class="primary-action" type="button" id="printButton">PDF 저장</button>
+            <button class="ghost-action" type="button" id="exportButton">데이터 저장</button>
+            <button class="ghost-action" type="button" id="importButton">불러오기</button>
+            <input type="file" id="importFile" accept="application/json,.json" hidden />
+          </div>
+        </div>
+
+        <section class="panel-section">
+          <div class="section-title">기본 정보</div>
+          <div class="field-grid two">
+            <label class="field">
+              <span>브랜드</span>
+              <select data-key="brandId" id="brandSelect">
+                <option value="polesimon">폴사이몬</option>
+                <option value="boutiquehaus">부티크하우스</option>
+                <option value="sgdc">에스지디씨</option>
+              </select>
+            </label>
+            <label class="field"><span>견적일</span><input type="date" data-key="dateValue" /></label>
+            <label class="field">
+              <span>견적번호</span>
+              <div class="serial-control">
+                <button type="button" data-serial-step="-1" aria-label="견적번호 줄이기">-</button>
+                <input data-key="quoteSerial" inputmode="numeric" placeholder="1" />
+                <button type="button" data-serial-step="1" aria-label="견적번호 늘리기">+</button>
+              </div>
+            </label>
+          </div>
+        </section>
+
+        <section class="panel-section">
+          <div class="section-title">고객사</div>
+          <div class="field-grid">
+            <div class="rounding-options">
+              <label><input type="radio" name="customerType" data-customer-type="business" /> 사업자고객</label>
+              <label><input type="radio" name="customerType" data-customer-type="personal" /> 일반고객</label>
+            </div>
+            <div class="field-grid customer-fields" data-customer-fields="personal" hidden>
+              <label class="field"><span>이름</span><input data-key="seller.company" placeholder="이름을 입력해 주세요." /></label>
+              <label class="field"><span>연락처</span><input data-key="seller.contactPhone" placeholder="연락처를 입력해 주세요." /></label>
+              <label class="field address-field">
+                <span>주소</span>
+                <textarea data-key="seller.address" placeholder="주소를 입력해 주세요."></textarea>
+              </label>
+              <div class="field-grid two">
+                <label class="field">
+                  <span>예상 배송일</span>
+                  <div class="clearable-input">
+                    <input type="date" data-key="seller.deliveryDate" />
+                    <button class="clear-field-button" type="button" data-clear-key="seller.deliveryDate" aria-label="예상 배송일 삭제">×</button>
+                  </div>
+                </label>
+                <label class="field">
+                  <span>예상 소요일</span>
+                  <div class="clearable-input">
+                    <input data-key="seller.deliveryDays" inputmode="numeric" placeholder="숫자만 입력" />
+                    <button class="clear-field-button" type="button" data-clear-key="seller.deliveryDays" aria-label="예상 소요일 삭제">×</button>
+                  </div>
+                </label>
+              </div>
+            </div>
+            <div class="field-grid customer-fields" data-customer-fields="business">
+              <label class="field"><span>업체명</span><input data-key="seller.company" data-placeholder="seller.company" /></label>
+              <label class="field address-field">
+                <span>주소</span>
+                <textarea data-key="seller.address" data-placeholder="seller.address"></textarea>
+              </label>
+              <label class="field"><span>대표자</span><input data-key="seller.ceo" data-placeholder="seller.ceo" /></label>
+              <label class="field"><span>사업자번호</span><input data-key="seller.businessNo" data-placeholder="seller.businessNo" /></label>
+              <label class="field"><span>담당자 이름</span><input data-key="seller.contactName" data-placeholder="seller.contactName" /></label>
+              <label class="field"><span>담당자 직위</span><input data-key="seller.contactTitle" data-placeholder="seller.contactTitle" /></label>
+              <label class="field"><span>담당자 연락처</span><input data-key="seller.contactPhone" data-placeholder="seller.contactPhone" /></label>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel-section">
+          <div class="section-title">공급자</div>
+          <div class="field-grid">
+            <label class="field">
+              <span>공급자 선택</span>
+              <select data-key="buyerPreset" id="buyerPresetSelect">
+                <option value="simon">주식회사 사이몬가드얼라이언스</option>
+                <option value="sgdc">에스지디씨</option>
+                <option value="custom">직접입력</option>
+              </select>
+            </label>
+            <label class="field"><span>업체명</span><input data-key="buyer.company" /></label>
+            <label class="field address-field">
+              <span>주소</span>
+              <textarea data-key="buyer.address"></textarea>
+            </label>
+            <label class="field"><span>대표자</span><input data-key="buyer.ceo" /></label>
+            <label class="field"><span>사업자번호</span><input data-key="buyer.businessNo" /></label>
+            <label class="field"><span>대표전화</span><input data-key="buyer.phone" /></label>
+            <label class="field"><span>은행</span><input data-key="bank.bankName" /></label>
+            <label class="field"><span>계좌번호</span><input data-key="bank.accountNo" /></label>
+            <label class="field"><span>입금자명</span><input data-key="bank.accountHolder" /></label>
+          </div>
+        </section>
+
+        <section class="panel-section">
+          <div class="section-title">
+            <span>견적 항목</span>
+            <button class="ghost-action" type="button" id="addItemButton">품목 추가</button>
+          </div>
+          <div class="item-editor-list" id="itemEditors"></div>
+          <div class="discount-editor-list rounding-section">
+            <div class="section-title">부가세</div>
+            <div class="rounding-options">
+              <label><input type="radio" name="taxMode" data-tax-mode="included" /> 부가세 포함</label>
+              <label><input type="radio" name="taxMode" data-tax-mode="excluded" /> 부가세 별도</label>
+            </div>
+          </div>
+          <div class="discount-editor-list rounding-section">
+            <div class="section-title">총 금액 절사</div>
+            <div class="rounding-options">
+              <label><input type="radio" name="roundingUnit" data-rounding-unit="0" /> 절사 없음</label>
+              <label><input type="radio" name="roundingUnit" data-rounding-unit="10" /> 십원 단위 절사</label>
+              <label><input type="radio" name="roundingUnit" data-rounding-unit="100" /> 백원 단위 절사</label>
+              <label><input type="radio" name="roundingUnit" data-rounding-unit="1000" /> 천원 단위 절사</label>
+              <label><input type="radio" name="roundingUnit" data-rounding-unit="10000" /> 만원 단위 절사</label>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel-section">
+          <div class="section-title">
+            <span>하단 정보</span>
+            <button class="ghost-action" type="button" id="addNoteButton">비고 추가</button>
+          </div>
+          <div class="item-editor-list" id="noteEditors"></div>
+        </section>
+      </aside>
+
+      <section class="preview-zone" aria-label="A4 견적서 미리보기">
+        <article class="a4-page">
+          <header class="quote-header">
+            <div class="quote-identity">
+              <div class="quote-title">Quotation</div>
+              <div class="brand-mark"><img id="previewBrandLogo" alt="" /></div>
+            </div>
+            <div class="quote-meta">
+              <div><span>견적서 번호</span><strong id="previewQuoteNo"></strong></div>
+              <div><span>견적일</span><strong id="previewDate"></strong></div>
+            </div>
+          </header>
+
+          <section class="party-grid">
+            <div class="party-block">
+              <div class="party-heading">TO</div>
+              <div id="previewSeller"></div>
+            </div>
+            <div class="party-block">
+              <div class="party-heading">FROM</div>
+              <div id="previewBuyer"></div>
+            </div>
+          </section>
+
+          <section class="items-section">
+            <div class="table-head"><span>Item Descriptions</span><span>Price</span><span>Qty</span><span>Subtotal</span></div>
+            <div class="items-list" id="previewItems"></div>
+          </section>
+
+          <footer class="quote-footer">
+            <div class="bank-box"><span>Bank Account</span><strong id="previewBank"></strong></div>
+            <div class="total-box">
+              <span class="tax-label" id="previewTaxLabel"></span>
+              <span class="tax-value" id="previewTaxValue"></span>
+              <span class="total-label">Total</span>
+              <strong id="previewTotal"></strong>
+              <em class="total-note" id="previewRoundingNote"></em>
+            </div>
+            <p class="notice" id="previewNote"></p>
+          </footer>
+        </article>
+      </section>
+    </main>
+
+    <script>
+      const storageKey = "quote-builder-draft-v4";
+
+      const brands = {
+        polesimon: {
+          name: "폴사이몬",
+          code: "PS",
+          logo: "assets/logo-polesimon-black.png",
+          alt: "pole simon",
+        },
+        boutiquehaus: {
+          name: "부티크하우스",
+          code: "BH",
+          logo: "assets/logo-boutiquehaus-symbol.png",
+          alt: "boutique haus",
+        },
+        sgdc: {
+          name: "에스지디씨",
+          code: "SD",
+          logo: "assets/logo-sgdc.png",
+          alt: "SGDC",
+        },
+      };
+
+      const placeholders = {
+        seller: {
+          company: "주식회사 홍길동",
+          address: "(03048) 서울특별시 종로구 청와대로 1",
+          ceo: "홍길동",
+          businessNo: "123-45-67890",
+          contactName: "홍길동",
+          contactTitle: "대표",
+          contactPhone: "000-000-0000",
+        },
+      };
+
+      const buyerPresets = {
+        simon: {
+          buyer: {
+            company: "주식회사 사이몬가드얼라이언스",
+            address: "(12902) 경기 하남시 미사강변한강로 135, 가 101",
+            ceo: "김유진",
+            businessNo: "727-88-03454",
+            phone: "0507-1392-1828",
+          },
+          bank: {
+            bankName: "농협",
+            accountNo: "317-0028-8820-11",
+            accountHolder: "주식회사 사이몬가드얼라이언스",
+          },
+        },
+        sgdc: {
+          buyer: {
+            company: "에스지디씨",
+            address: "(12902) 경기 하남시 미사강변한강로 135, 가 101",
+            ceo: "김유진",
+            businessNo: "895-53-00762",
+            phone: "0507-1392-1828",
+          },
+          bank: {
+            bankName: "농협",
+            accountNo: "352-2145-2397-73",
+            accountHolder: "김유진(에스지디씨)",
+          },
+        },
+        custom: {
+          buyer: {
+            company: "",
+            address: "",
+            ceo: "",
+            businessNo: "",
+            phone: "",
+          },
+          bank: {
+            bankName: "",
+            accountNo: "",
+            accountHolder: "",
+          },
+        },
+      };
+
+      const labels = {
+        company: "업체명",
+        address: "주소",
+        ceo: "대표자",
+        businessNo: "사업자번호",
+        contact: "담당자",
+        contactSummary: "담당자",
+        contactName: "담당자 이름",
+        contactTitle: "담당자 직위",
+        contactPhone: "담당자 연락처",
+        phone: "대표전화",
+      };
+
+      const initialQuote = {
+        quoteSerial: "1",
+        dateValue: getTodayValue(),
+        brandId: "polesimon",
+        buyerPreset: "simon",
+        taxMode: "included",
+        roundingUnit: 0,
+        customerType: "business",
+        seller: {
+          company: "",
+          address: "",
+          ceo: "",
+          businessNo: "",
+          contactName: "",
+          contactTitle: "",
+          contactPhone: "",
+          deliveryDate: "",
+          deliveryDays: "",
+        },
+        buyer: { ...buyerPresets.simon.buyer },
+        items: [
+          {
+            title: "",
+            description: "",
+            supplyPrice: "",
+            quantity: 1,
+            includeInTotal: true,
+            discounts: [
+              { title: "", type: "percent", value: "" },
+            ],
+          },
+        ],
+        bank: { ...buyerPresets.simon.bank },
+        notes: ["본 견적서에 명시되지 않은 내역 및 변경사항에 대해서는 별도 협의를 통해 추가 비용이 발생할 수 있습니다."],
+      };
+
+      localStorage.removeItem(storageKey);
+
+      let quote = loadQuote();
+
+      function loadQuote() {
+        return normalizeQuote(structuredClone(initialQuote));
+      }
+
+      function normalizeQuote(savedQuote) {
+        const nextQuote = { ...structuredClone(initialQuote), ...savedQuote };
+        nextQuote.seller = { ...initialQuote.seller, ...(savedQuote.seller || {}) };
+        nextQuote.buyer = { ...initialQuote.buyer, ...(savedQuote.buyer || {}) };
+        nextQuote.bank = normalizeBank(savedQuote.bank);
+        nextQuote.items = normalizeItems(savedQuote.items);
+        nextQuote.notes = normalizeNotes(savedQuote.notes ?? savedQuote.note);
+        if (!nextQuote.brandId) nextQuote.brandId = "polesimon";
+        if (nextQuote.customerType !== "personal") nextQuote.customerType = "business";
+        if (!nextQuote.buyerPreset) nextQuote.buyerPreset = inferBuyerPreset(nextQuote.buyer, nextQuote.bank);
+        if (nextQuote.taxMode !== "excluded") nextQuote.taxMode = "included";
+        nextQuote.roundingUnit = numberInput(nextQuote.roundingUnit);
+        nextQuote.dateValue = savedQuote.dateValue || getTodayValue();
+        if (savedQuote.seller?.contact && !nextQuote.seller.contactName) {
+          normalizeContact(nextQuote.seller, savedQuote.seller.contact);
+        }
+        if (!nextQuote.quoteSerial && savedQuote.quoteNo) {
+          nextQuote.quoteSerial = String(savedQuote.quoteNo).split("-").pop() || initialQuote.quoteSerial;
+        }
+        return nextQuote;
+      }
+
+      function inferBuyerPreset(buyer, bank) {
+        if (buyer?.businessNo === buyerPresets.sgdc.buyer.businessNo || bank?.accountNo === buyerPresets.sgdc.bank.accountNo) {
+          return "sgdc";
+        }
+        if (
+          buyer?.businessNo === buyerPresets.simon.buyer.businessNo ||
+          bank?.accountNo === buyerPresets.simon.bank.accountNo
+        ) {
+          return "simon";
+        }
+        return "custom";
+      }
+
+      function applyBuyerPreset(presetId) {
+        const preset = buyerPresets[presetId] || buyerPresets.custom;
+        quote.buyerPreset = presetId;
+        quote.buyer = { ...preset.buyer };
+        quote.bank = { ...preset.bank };
+        saveQuote();
+        render();
+      }
+
+      function saveQuote() {
+        // Intentionally empty: refresh should always return to the initial blank form.
+      }
+
+      function normalizeBank(bank) {
+        if (bank && typeof bank === "object") {
+          return { ...initialQuote.bank, ...bank };
+        }
+        if (typeof bank === "string") {
+          const parts = bank.split("/").map((part) => part.trim());
+          return {
+            bankName: parts[0] || initialQuote.bank.bankName,
+            accountNo: parts[1] || initialQuote.bank.accountNo,
+            accountHolder: parts[2] || initialQuote.bank.accountHolder,
+          };
+        }
+        return structuredClone(initialQuote.bank);
+      }
+
+      function normalizeContact(seller, contact) {
+        const [namePart, phonePart] = String(contact).split("/").map((part) => part.trim());
+        const nameWords = String(namePart || "").split(/\s+/).filter(Boolean);
+        seller.contactName = nameWords[0] || "";
+        seller.contactTitle = nameWords.slice(1).join(" ").replace(/님$/, "") || "";
+        seller.contactPhone = phonePart || "";
+      }
+
+      function normalizeItems(items) {
+        if (!Array.isArray(items) || items.length === 0) return structuredClone(initialQuote.items);
+        return items.map((item) => ({
+          title: item.title || "",
+          description: item.description || "",
+          supplyPrice: item.supplyPrice === "" || item.supplyPrice === undefined ? "" : numberInput(item.supplyPrice ?? item.price),
+          quantity: Math.max(1, numberInput(item.quantity || 1)),
+          includeInTotal: item.includeInTotal !== false,
+          discounts: Array.isArray(item.discounts)
+            ? item.discounts.map((discount) => ({
+                title: discount.title || discount.memo || "",
+                type: discount.type === "won" ? "won" : "percent",
+                value: discount.value === "" || discount.value === undefined ? "" : numberInput(discount.value),
+              }))
+            : [],
+        }));
+      }
+
+      function normalizeNotes(notes) {
+        if (Array.isArray(notes)) return notes.map((note) => String(note || "")).filter((note) => note.trim());
+        if (typeof notes === "string" && notes.trim()) return [notes];
+        return structuredClone(initialQuote.notes);
+      }
+
+      function getValue(path) {
+        return path.split(".").reduce((target, key) => target[key], quote);
+      }
+
+      function setValue(path, value) {
+        const keys = path.split(".");
+        let target = quote;
+        keys.slice(0, -1).forEach((key) => {
+          target = target[key];
+        });
+        target[keys[keys.length - 1]] = value;
+        if (path.startsWith("buyer.") || path.startsWith("bank.")) {
+          quote.buyerPreset = "custom";
+          const presetField = document.querySelector('[data-key="buyerPreset"]');
+          if (presetField) presetField.value = "custom";
+        }
+        saveQuote();
+        renderPreview();
+      }
+
+      function syncDeliveryFields(path, value) {
+        if (path === "seller.deliveryDate" && value) {
+          quote.seller.deliveryDays = "";
+        }
+        if (path === "seller.deliveryDays") {
+          quote.seller.deliveryDays = value ? String(numberInput(value)) : "";
+          if (quote.seller.deliveryDays) quote.seller.deliveryDate = "";
+        }
+      }
+
+      function updateDeliveryControls() {
+        const deliveryDateField = document.querySelector('[data-key="seller.deliveryDate"]');
+        const deliveryDaysField = document.querySelector('[data-key="seller.deliveryDays"]');
+        if (deliveryDateField && deliveryDaysField) {
+          deliveryDateField.disabled = Boolean(quote.seller.deliveryDays);
+          deliveryDaysField.disabled = Boolean(quote.seller.deliveryDate);
+        }
+        document.querySelectorAll("[data-clear-key]").forEach((button) => {
+          button.hidden = !getValue(button.dataset.clearKey);
+        });
+      }
+
+      function escapeHtml(value) {
+        return String(value ?? "")
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;")
+          .replaceAll('"', "&quot;")
+          .replaceAll("'", "&#039;");
+      }
+
+      function numberInput(value) {
+        return Number(String(value).replace(/[^\d-]/g, "")) || 0;
+      }
+
+      function percentInput(value) {
+        return Math.max(0, Number(String(value).replace(/[^\d.]/g, "")) || 0);
+      }
+
+      function formatCurrency(value) {
+        return new Intl.NumberFormat("ko-KR", {
+          style: "currency",
+          currency: "KRW",
+          maximumFractionDigits: 0,
+        }).format(Number(value) || 0);
+      }
+
+      function parseKoreanDate(value) {
+        const parts = String(value || "").match(/\d+/g);
+        if (!parts || parts.length < 3) return initialQuote.dateValue;
+        const [year, month, day] = parts;
+        return `${year.padStart(4, "0")}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
+      }
+
+      function getTodayValue() {
+        const today = new Date();
+        const year = String(today.getFullYear());
+        const month = String(today.getMonth() + 1).padStart(2, "0");
+        const day = String(today.getDate()).padStart(2, "0");
+        return `${year}-${month}-${day}`;
+      }
+
+      function formatDate(value) {
+        const parts = String(value || "").split("-");
+        if (parts.length !== 3) return value || "";
+        const [year, month, day] = parts;
+        const date = new Date(Number(year), Number(month) - 1, Number(day));
+        const weekdays = ["일", "월", "화", "수", "목", "금", "토"];
+        return `${Number(year)}. ${Number(month)}. ${Number(day)} (${weekdays[date.getDay()]})`;
+      }
+
+      function formatQuoteDateCode(value) {
+        const parts = String(value || "").split("-");
+        if (parts.length !== 3) return "000000";
+        return `${parts[0].slice(2)}${parts[1]}${parts[2]}`;
+      }
+
+      function getQuoteNo() {
+        const brand = brands[quote.brandId] || brands.polesimon;
+        const serial = formatQuoteSerial(quote.quoteSerial);
+        return `${brand.code}-${formatQuoteDateCode(quote.dateValue)}-${serial}`;
+      }
+
+      function formatQuoteSerial(value) {
+        const number = Math.max(0, Number(String(value || "").replace(/[^\d]/g, "")) || 1);
+        return String(number).padStart(3, "0");
+      }
+
+      function stepQuoteSerial(step) {
+        const current = Number(String(quote.quoteSerial || "").replace(/[^\d]/g, "")) || 1;
+        quote.quoteSerial = String(Math.max(1, current + step));
+        saveQuote();
+        render();
+      }
+
+      function getItemQuantity(item) {
+        return Math.max(1, numberInput(item.quantity || 1));
+      }
+
+      function getItemSubtotal(item) {
+        return numberInput(item.supplyPrice) * getItemQuantity(item);
+      }
+
+      function stepItemQuantity(index, step) {
+        const item = quote.items[Number(index)];
+        if (!item) return;
+        item.quantity = Math.max(1, getItemQuantity(item) + Number(step));
+        saveQuote();
+        render();
+      }
+
+      function getDiscountAmount(item, discount) {
+        const supplyPrice = getItemSubtotal(item);
+        const value = percentInput(discount.value);
+        if (discount.type === "percent") return Math.round(supplyPrice * (value / 100));
+        return Math.min(supplyPrice, Math.round(value));
+      }
+
+      function getDiscountPercent(item, discount) {
+        const supplyPrice = getItemSubtotal(item);
+        if (!supplyPrice) return 0;
+        return (getDiscountAmount(item, discount) / supplyPrice) * 100;
+      }
+
+      function formatPercent(value) {
+        const rounded = Math.round(value * 10) / 10;
+        return Number.isInteger(rounded) ? `${rounded}%` : `${rounded.toFixed(1)}%`;
+      }
+
+      function formatDiscountLabel(discount) {
+        const value = percentInput(discount.value);
+        if (discount.type === "percent") return `${formatPercent(value)} 할인`;
+        return `${new Intl.NumberFormat("ko-KR").format(Math.round(value))}원 할인`;
+      }
+
+      function getItemFinalPrice(item) {
+        const supplyPrice = getItemSubtotal(item);
+        const discountTotal = item.discounts.reduce((sum, discount) => sum + getDiscountAmount(item, discount), 0);
+        return Math.max(0, supplyPrice - discountTotal);
+      }
+
+      function getQuoteTotal() {
+        return applyRounding(getTaxedSubtotal());
+      }
+
+      function getTaxBaseTotal() {
+        return quote.items.reduce((sum, item) => sum + (item.includeInTotal === false ? 0 : getItemFinalPrice(item)), 0);
+      }
+
+      function getVatAmount() {
+        const base = getTaxBaseTotal();
+        if (quote.taxMode === "excluded") return Math.round(base * 0.1);
+        return Math.round(base - base / 1.1);
+      }
+
+      function getTaxedSubtotal() {
+        const base = getTaxBaseTotal();
+        if (quote.taxMode === "excluded") return base + getVatAmount();
+        return base;
+      }
+
+      function getTaxLabel() {
+        return "VAT 10%";
+      }
+
+      function getTaxValueLabel() {
+        return `${formatCurrency(getVatAmount())} ${quote.taxMode === "excluded" ? "별도" : "포함"}`;
+      }
+
+      function applyRounding(value) {
+        const unit = numberInput(quote.roundingUnit);
+        if (!unit) return value;
+        const eraseUnit = unit * 10;
+        return Math.floor(value / eraseUnit) * eraseUnit;
+      }
+
+      function getRoundingLabel() {
+        const labels = {
+          10: "십원 단위 절사",
+          100: "백원 단위 절사",
+          1000: "천원 단위 절사",
+          10000: "만원 단위 절사",
+        };
+        return labels[numberInput(quote.roundingUnit)] || "";
+      }
+
+      function formatBank() {
+        return [quote.bank.bankName, quote.bank.accountNo, quote.bank.accountHolder].filter(Boolean).join(" / ");
+      }
+
+      function formatContact(seller) {
+        const nameTitle = [seller.contactName, seller.contactTitle].filter(Boolean).join(" ");
+        const honorific = nameTitle ? `${nameTitle}님` : "";
+        const phone = seller.contactPhone || "";
+        return [honorific, phone].filter(Boolean).join(" / ");
+      }
+
+      function getDeliveryRows(seller) {
+        if (seller.deliveryDate) {
+          return [
+            `예상 배송일: ${formatDate(seller.deliveryDate)}`,
+            "*예상 배송일이며, 변동될 수 있습니다.",
+          ];
+        }
+        if (seller.deliveryDays) {
+          return [
+            `배송까지 약 ${numberInput(seller.deliveryDays)}일 소요 예정`,
+            "*예상 소요일이며, 변동될 수 있습니다.",
+          ];
+        }
+        return [];
+      }
+
+      function renderPersonalCustomer(seller) {
+        const rows = [
+          seller.company,
+          seller.contactPhone,
+          seller.address,
+          ...getDeliveryRows(seller),
+        ];
+        return rows
+          .filter((value) => String(value || "").trim())
+          .map((value) => {
+            const isNote = String(value).startsWith("*");
+            return `
+              <div class="party-row">
+                <div class="party-value ${isNote ? "is-note" : ""}">${escapeHtml(value)}</div>
+              </div>
+            `;
+          })
+          .join("");
+      }
+
+      function renderParty(party, keys) {
+        return keys
+          .map(
+            (key) => {
+              const value = key === "contactSummary" ? formatContact(party) : party[key];
+              return `
+                <div class="party-row">
+                  <div class="party-label">${labels[key]}</div>
+                  <div class="party-value">${escapeHtml(value)}</div>
+                </div>
+              `;
+            },
+          )
+          .join("");
+      }
+
+      function renderItemEditors() {
+        document.getElementById("itemEditors").innerHTML = quote.items
+          .map(
+            (item, index) => `
+              <div class="item-editor">
+                <div class="item-editor-top">
+                  <strong>품목 ${String(index + 1).padStart(2, "0")}</strong>
+                  <label class="toggle">
+                    <input type="checkbox" data-item="${index}" data-item-key="includeInTotal" ${item.includeInTotal === false ? "" : "checked"} />
+                    TOTAL 포함
+                  </label>
+                  <button class="text-action" type="button" data-remove="${index}">삭제</button>
+                </div>
+                <label class="field"><span>품목 이름</span><input data-item="${index}" data-item-key="title" placeholder="품목 이름을 입력해 주세요." value="${escapeHtml(item.title)}" /></label>
+                <label class="field"><span>품목 내용</span><textarea data-item="${index}" data-item-key="description" placeholder="품목 내용을 입력해 주세요.">${escapeHtml(item.description)}</textarea></label>
+                <label class="field"><span>공급가</span><input data-item="${index}" data-item-key="supplyPrice" placeholder="공급가를 입력해 주세요." value="${escapeHtml(item.supplyPrice)}" /></label>
+                <label class="field">
+                  <span>수량</span>
+                  <div class="serial-control">
+                    <button type="button" data-quantity-step="-1" data-item="${index}" aria-label="수량 줄이기">-</button>
+                    <input data-item="${index}" data-item-key="quantity" inputmode="numeric" placeholder="1" value="${escapeHtml(getItemQuantity(item))}" />
+                    <button type="button" data-quantity-step="1" data-item="${index}" aria-label="수량 늘리기">+</button>
+                  </div>
+                </label>
+                <div class="discount-editor-list">
+                  <div class="section-title">
+                    <span>할인</span>
+                    <button class="ghost-action" type="button" data-add-discount="${index}">할인 추가</button>
+                  </div>
+                  ${item.discounts
+                    .map(
+                      (discount, discountIndex) => `
+                        <div class="discount-editor">
+                          <label class="field discount-title-field">
+                            <span>할인 내용</span>
+                            <input data-item="${index}" data-discount="${discountIndex}" data-discount-key="title" placeholder="할인 내용을 입력해 주세요." value="${escapeHtml(discount.title)}" />
+                          </label>
+                          <label class="field">
+                            <span>방식</span>
+                            <select data-item="${index}" data-discount="${discountIndex}" data-discount-key="type">
+                              <option value="percent" ${discount.type === "percent" ? "selected" : ""}>%</option>
+                              <option value="won" ${discount.type === "won" ? "selected" : ""}>원</option>
+                            </select>
+                          </label>
+                          <label class="field discount-value-field">
+                            <span>수치</span>
+                            <input data-item="${index}" data-discount="${discountIndex}" data-discount-key="value" value="${escapeHtml(discount.value)}" />
+                          </label>
+                          <div class="discount-result" data-discount-result="${index}:${discountIndex}">
+                            ${formatCurrency(getDiscountAmount(item, discount))} / ${formatPercent(getDiscountPercent(item, discount))}
+                          </div>
+                          <button class="text-action" type="button" data-remove-discount="${index}:${discountIndex}">삭제</button>
+                        </div>
+                      `,
+                    )
+                    .join("")}
+                </div>
+                <div class="discount-summary" data-item-final="${index}">최종 ${formatCurrency(getItemFinalPrice(item))}</div>
+              </div>
+            `,
+          )
+          .join("");
+      }
+
+      function renderNoteEditors() {
+        document.getElementById("noteEditors").innerHTML = quote.notes
+          .map(
+            (note, index) => `
+              <div class="item-editor">
+                <div class="item-editor-top">
+                  <strong>비고 ${String(index + 1).padStart(2, "0")}</strong>
+                  <button class="text-action" type="button" data-remove-note="${index}">삭제</button>
+                </div>
+                <label class="field">
+                  <span>내용</span>
+                  <textarea data-note="${index}" placeholder="비고 내용을 입력해 주세요.">${escapeHtml(note)}</textarea>
+                </label>
+              </div>
+            `,
+          )
+          .join("");
+      }
+
+      function renderPreview() {
+        const brand = brands[quote.brandId] || brands.polesimon;
+        const logo = document.getElementById("previewBrandLogo");
+        logo.src = brand.logo;
+        logo.alt = brand.alt;
+        document.getElementById("previewQuoteNo").textContent = getQuoteNo();
+        document.getElementById("previewDate").textContent = formatDate(quote.dateValue);
+        document.getElementById("previewSeller").innerHTML =
+          quote.customerType === "personal"
+            ? renderPersonalCustomer(quote.seller)
+            : renderParty(quote.seller, [
+                "company",
+                "address",
+                "ceo",
+                "businessNo",
+                "contactSummary",
+              ]);
+        document.getElementById("previewBuyer").innerHTML = renderParty(quote.buyer, [
+          "company",
+          "address",
+          "ceo",
+          "businessNo",
+          "phone",
+        ]);
+        document.getElementById("previewItems").innerHTML = quote.items
+          .map((item) => {
+            const discountRows = item.discounts
+              .map((discount, discountIndex) => {
+                const amount = getDiscountAmount(item, discount);
+                const isLastDiscount = discountIndex === item.discounts.length - 1;
+                return `
+                  <div class="quote-item discount-row ${isLastDiscount ? "last-discount has-total" : ""}">
+                    <div>
+                      <p>${escapeHtml(discount.title)} (${escapeHtml(formatDiscountLabel(discount))})</p>
+                    </div>
+                    <strong>-${formatCurrency(amount)}</strong>
+                    ${
+                      isLastDiscount
+                        ? `<span class="discount-applied-total">계: ${formatCurrency(getItemFinalPrice(item))}</span>`
+                        : ""
+                    }
+                  </div>
+                `;
+              })
+              .join("");
+            const hasDiscounts = item.discounts.length > 0;
+            return `
+              <div class="quote-item is-highlight ${hasDiscounts ? "has-discounts" : ""}">
+                <div>
+                  <p>${escapeHtml(item.title)}</p>
+                  <span>${escapeHtml(item.description)}</span>
+                </div>
+                <span class="item-price">${formatCurrency(item.supplyPrice)}</span>
+                <span class="item-qty">${getItemQuantity(item)}</span>
+                <strong class="item-subtotal">${formatCurrency(getItemSubtotal(item))}</strong>
+              </div>
+              ${discountRows}
+            `;
+          })
+          .join("");
+        document.getElementById("previewBank").textContent = formatBank();
+        document.getElementById("previewTaxLabel").textContent = getTaxLabel();
+        document.getElementById("previewTaxValue").textContent = getTaxValueLabel();
+        document.getElementById("previewTotal").textContent = formatCurrency(getQuoteTotal());
+        document.getElementById("previewRoundingNote").textContent = getRoundingLabel()
+          ? `(${getRoundingLabel()})`
+          : "";
+        document.getElementById("previewNote").innerHTML = quote.notes
+          .filter((note) => String(note).trim())
+          .map((note) => `* ${escapeHtml(note)}`)
+          .join("<br>");
+      }
+
+      function updateEditorCalculations() {
+        document.querySelectorAll("[data-discount-result]").forEach((element) => {
+          const [itemIndex, discountIndex] = element.dataset.discountResult.split(":").map(Number);
+          const item = quote.items[itemIndex];
+          const discount = item?.discounts?.[discountIndex];
+          if (!item || !discount) return;
+          element.textContent = `${formatCurrency(getDiscountAmount(item, discount))} / ${formatPercent(
+            getDiscountPercent(item, discount),
+          )}`;
+        });
+        document.querySelectorAll("[data-item-final]").forEach((element) => {
+          const item = quote.items[Number(element.dataset.itemFinal)];
+          if (item) element.textContent = `최종 ${formatCurrency(getItemFinalPrice(item))}`;
+        });
+      }
+
+      function render() {
+        document.querySelectorAll("[data-key]").forEach((field) => {
+          field.value = getValue(field.dataset.key) || "";
+          if (field.dataset.placeholder) {
+            const placeholderValue = field.dataset.placeholder
+              .split(".")
+              .reduce((target, key) => target[key], placeholders);
+            field.placeholder = placeholderValue || "";
+          }
+        });
+
+        document.querySelectorAll("[data-rounding-unit]").forEach((field) => {
+          const disabled = quote.taxMode === "excluded" && numberInput(field.dataset.roundingUnit) !== 0;
+          field.disabled = disabled;
+          field.checked = numberInput(field.dataset.roundingUnit) === numberInput(quote.roundingUnit);
+          field.closest("label")?.classList.toggle("is-disabled", disabled);
+        });
+
+        document.querySelectorAll("[data-tax-mode]").forEach((field) => {
+          field.checked = field.dataset.taxMode === quote.taxMode;
+        });
+
+        document.querySelectorAll("[data-customer-type]").forEach((field) => {
+          field.checked = field.dataset.customerType === quote.customerType;
+        });
+
+        document.querySelectorAll("[data-customer-fields]").forEach((group) => {
+          group.hidden = group.dataset.customerFields !== quote.customerType;
+        });
+
+        const deliveryDateField = document.querySelector('[data-key="seller.deliveryDate"]');
+        const deliveryDaysField = document.querySelector('[data-key="seller.deliveryDays"]');
+        if (deliveryDateField && deliveryDaysField) {
+          deliveryDateField.disabled = Boolean(quote.seller.deliveryDays);
+          deliveryDaysField.disabled = Boolean(quote.seller.deliveryDate);
+        }
+
+        renderItemEditors();
+        renderNoteEditors();
+        renderPreview();
+      }
+
+      document.addEventListener("input", (event) => {
+        const key = event.target.dataset.key;
+        const itemIndex = event.target.dataset.item;
+        const itemKey = event.target.dataset.itemKey;
+        const discountIndex = event.target.dataset.discount;
+        const discountKey = event.target.dataset.discountKey;
+        const noteIndex = event.target.dataset.note;
+
+        if (key) {
+          setValue(key, event.target.value);
+          syncDeliveryFields(key, event.target.value);
+          if (key.startsWith("seller.delivery")) {
+            saveQuote();
+            updateDeliveryControls();
+            renderPreview();
+          }
+        }
+
+        if (itemIndex !== undefined && itemKey) {
+          if (itemKey === "includeInTotal") {
+            quote.items[Number(itemIndex)][itemKey] = event.target.checked;
+          } else if (itemKey === "quantity") {
+            quote.items[Number(itemIndex)][itemKey] = Math.max(1, numberInput(event.target.value));
+          } else {
+            quote.items[Number(itemIndex)][itemKey] =
+              itemKey === "supplyPrice" ? numberInput(event.target.value) : event.target.value;
+          }
+          saveQuote();
+          updateEditorCalculations();
+          renderPreview();
+        }
+
+        if (itemIndex !== undefined && discountIndex !== undefined && discountKey) {
+          const discount = quote.items[Number(itemIndex)].discounts[Number(discountIndex)];
+          discount[discountKey] = discountKey === "value" ? percentInput(event.target.value) : event.target.value;
+          saveQuote();
+          updateEditorCalculations();
+          renderPreview();
+        }
+
+        if (noteIndex !== undefined) {
+          quote.notes[Number(noteIndex)] = event.target.value;
+          saveQuote();
+          renderPreview();
+        }
+      });
+
+      document.addEventListener("change", (event) => {
+        const key = event.target.dataset.key;
+        const itemIndex = event.target.dataset.item;
+        const itemKey = event.target.dataset.itemKey;
+        const discountIndex = event.target.dataset.discount;
+        const discountKey = event.target.dataset.discountKey;
+        const customerType = event.target.dataset.customerType;
+        if (key) {
+          if (key === "buyerPreset") {
+            applyBuyerPreset(event.target.value);
+          } else {
+            setValue(key, event.target.value);
+            syncDeliveryFields(key, event.target.value);
+            if (key.startsWith("seller.delivery")) render();
+          }
+        }
+
+        if (customerType !== undefined) {
+          quote.customerType = customerType;
+          saveQuote();
+          render();
+        }
+
+        if (itemIndex !== undefined && itemKey === "includeInTotal") {
+          quote.items[Number(itemIndex)].includeInTotal = event.target.checked;
+          saveQuote();
+          updateEditorCalculations();
+          renderPreview();
+        }
+
+        if (itemIndex !== undefined && discountIndex !== undefined && discountKey === "type") {
+          quote.items[Number(itemIndex)].discounts[Number(discountIndex)].type = event.target.value;
+          saveQuote();
+          render();
+        }
+
+        if (event.target.dataset.roundingUnit !== undefined) {
+          quote.roundingUnit = numberInput(event.target.dataset.roundingUnit);
+          saveQuote();
+          renderPreview();
+        }
+
+        if (event.target.dataset.taxMode !== undefined) {
+          quote.taxMode = event.target.dataset.taxMode;
+          if (quote.taxMode === "excluded") {
+            quote.roundingUnit = 0;
+          }
+          saveQuote();
+          render();
+        }
+      });
+
+      document.addEventListener("click", (event) => {
+        const serialStep = event.target.dataset.serialStep;
+        const removeIndex = event.target.dataset.remove;
+        const addDiscountIndex = event.target.dataset.addDiscount;
+        const removeDiscount = event.target.dataset.removeDiscount;
+        const removeNote = event.target.dataset.removeNote;
+        const quantityStep = event.target.dataset.quantityStep;
+        const clearKey = event.target.dataset.clearKey;
+        if (serialStep !== undefined) {
+          stepQuoteSerial(Number(serialStep));
+        }
+        if (quantityStep !== undefined) {
+          stepItemQuantity(event.target.dataset.item, Number(quantityStep));
+        }
+        if (clearKey !== undefined) {
+          setValue(clearKey, "");
+          render();
+        }
+        if (removeIndex !== undefined) {
+          quote.items.splice(Number(removeIndex), 1);
+          saveQuote();
+          render();
+        }
+        if (addDiscountIndex !== undefined) {
+          quote.items[Number(addDiscountIndex)].discounts.push({ title: "", type: "percent", value: "" });
+          saveQuote();
+          render();
+        }
+        if (removeDiscount !== undefined) {
+          const [itemIndex, discountIndex] = removeDiscount.split(":").map(Number);
+          quote.items[itemIndex].discounts.splice(discountIndex, 1);
+          saveQuote();
+          render();
+        }
+        if (removeNote !== undefined) {
+          quote.notes.splice(Number(removeNote), 1);
+          if (quote.notes.length === 0) quote.notes.push("");
+          saveQuote();
+          render();
+        }
+      });
+
+      document.getElementById("addNoteButton").addEventListener("click", () => {
+        quote.notes.push("");
+        saveQuote();
+        render();
+      });
+
+      document.getElementById("addItemButton").addEventListener("click", () => {
+        quote.items.push({
+          title: "",
+          description: "",
+          supplyPrice: "",
+          quantity: 1,
+          includeInTotal: true,
+          discounts: [],
+        });
+        saveQuote();
+        render();
+      });
+
+      document.getElementById("printButton").addEventListener("click", () => {
+        window.print();
+      });
+
+      document.getElementById("exportButton").addEventListener("click", () => {
+        const blob = new Blob([JSON.stringify(quote, null, 2)], { type: "application/json" });
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = `${getQuoteNo()}-data.json`;
+        link.click();
+        URL.revokeObjectURL(link.href);
+      });
+
+      document.getElementById("importButton").addEventListener("click", () => {
+        document.getElementById("importFile").click();
+      });
+
+      document.getElementById("importFile").addEventListener("change", (event) => {
+        const file = event.target.files?.[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.addEventListener("load", () => {
+          try {
+            quote = normalizeQuote(JSON.parse(String(reader.result || "{}")));
+            render();
+          } catch {
+            alert("JSON 파일을 불러오지 못했습니다.");
+          } finally {
+            event.target.value = "";
+          }
+        });
+        reader.readAsText(file);
+      });
+
+      render();
+    </script>
+  </body>
+</html>
