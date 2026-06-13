@@ -195,6 +195,7 @@
       .field textarea {
         min-width: 0;
         width: 100%;
+        max-width: 100%;
         min-height: 40px;
         border: 1px solid transparent;
         border-radius: 8px;
@@ -208,9 +209,17 @@
           box-shadow 140ms ease;
       }
 
+      .field input[type="date"] {
+        display: block;
+        min-width: 0;
+        max-width: 100%;
+        -webkit-appearance: none;
+        appearance: none;
+      }
+
       .serial-control {
         display: grid;
-        grid-template-columns: 40px 1fr 40px;
+        grid-template-columns: 40px minmax(0, 1fr) 40px;
         gap: 6px;
       }
 
@@ -232,6 +241,7 @@
       .clearable-input {
         position: relative;
         display: grid;
+        min-width: 0;
       }
 
       .clearable-input input {
@@ -892,6 +902,20 @@
 
         .field-grid.two {
           grid-template-columns: 1fr;
+        }
+
+        .field input,
+        .field select,
+        .field textarea {
+          font-size: 16px;
+        }
+
+        .field input[type="date"] {
+          padding-right: 10px;
+        }
+
+        .serial-control {
+          grid-template-columns: 36px minmax(0, 1fr) 36px;
         }
 
         .a4-page {
