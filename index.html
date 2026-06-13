@@ -211,8 +211,12 @@
 
       .field input[type="date"] {
         display: block;
+        width: 100%;
+        inline-size: 100%;
         min-width: 0;
+        min-inline-size: 0;
         max-width: 100%;
+        max-inline-size: 100%;
         color-scheme: light;
       }
 
@@ -240,6 +244,11 @@
 
       .serial-control input {
         text-align: center;
+      }
+
+      .date-field,
+      .date-field .clearable-input {
+        overflow: hidden;
       }
 
       .clearable-input {
@@ -1025,7 +1034,7 @@
                 <option value="sgdc">에스지디씨</option>
               </select>
             </label>
-            <label class="field"><span>견적일</span><input type="date" data-key="dateValue" /></label>
+            <label class="field date-field"><span>견적일</span><input type="date" data-key="dateValue" /></label>
             <label class="field">
               <span>견적번호</span>
               <div class="serial-control">
@@ -1052,7 +1061,7 @@
                 <textarea data-key="seller.address" placeholder="주소를 입력해 주세요."></textarea>
               </label>
               <div class="field-grid two">
-                <label class="field">
+                <label class="field date-field">
                   <span>예상 배송일</span>
                   <div class="clearable-input">
                     <input type="date" data-key="seller.deliveryDate" />
