@@ -213,24 +213,12 @@
         display: block;
         min-width: 0;
         max-width: 100%;
-        overflow: hidden;
         color-scheme: light;
       }
 
       .field input[type="date"]::-webkit-calendar-picker-indicator {
         display: block;
         opacity: 1;
-        flex: 0 0 auto;
-        margin: 0;
-        padding: 0;
-        width: 20px;
-        height: 20px;
-      }
-
-      .field input[type="date"]::-webkit-date-and-time-value {
-        min-width: 0;
-        max-width: 100%;
-        text-align: left;
       }
 
       .serial-control {
@@ -927,30 +915,17 @@
         }
 
         .field input[type="date"] {
-          padding-right: 12px;
+          padding-right: 10px;
         }
 
         .serial-control {
           grid-template-columns: 36px minmax(0, 1fr) 36px;
         }
 
-        .preview-zone {
-          overflow-x: hidden;
-          justify-items: center;
-        }
-
         .a4-page {
-          zoom: 0.44;
-          transform: none;
-          transform-origin: top center;
-          margin-inline: auto;
-          margin-bottom: 24px;
-        }
-      }
-
-      @media (min-width: 481px) and (max-width: 760px) {
-        .a4-page {
-          zoom: 0.58;
+          transform: scale(0.48);
+          transform-origin: top left;
+          margin-bottom: -154mm;
         }
       }
 
