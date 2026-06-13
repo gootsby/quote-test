@@ -473,6 +473,10 @@
         min-height: 297mm;
       }
 
+      .print-root {
+        display: none;
+      }
+
       .a4-page {
         position: relative;
         display: flex;
@@ -1022,50 +1026,38 @@
       @media print {
         html,
         body {
-          width: 210mm;
+          width: 208mm;
+          max-width: 208mm;
           height: auto;
           min-height: 0;
           margin: 0;
           padding: 0;
           background: #fff;
-          overflow: visible;
+          overflow: hidden;
         }
 
         .app-shell {
-          display: block;
-          width: 210mm;
+          display: none !important;
+        }
+
+        .print-root {
+          display: block !important;
+          width: 208mm;
+          max-width: 208mm;
           height: auto;
           min-height: 0;
+          margin: 0;
+          padding: 0;
+          overflow: hidden;
           background: #fff;
         }
 
-        .editor-panel {
-          display: none;
-        }
-
-        .preview-zone {
-          display: block;
-          width: 210mm;
-          max-width: none;
-          height: auto;
-          min-height: 0;
-          overflow: visible;
-          padding: 0;
-        }
-
-        .preview-page-wrap {
-          position: static;
-          width: 210mm;
-          height: auto;
-          min-height: 0;
-          overflow: visible;
-        }
-
-        .a4-page {
+        .print-root .a4-page {
           position: relative;
           top: auto;
           left: auto;
-          width: 210mm;
+          width: 208mm;
+          max-width: 208mm;
           height: auto;
           min-height: 296.5mm;
           max-height: none;
@@ -1285,6 +1277,7 @@
         </div>
       </section>
     </main>
+    <div class="print-root" id="printRoot" aria-hidden="true"></div>
 
     <script>
       const storageKey = "quote-builder-draft-v4";
@@ -1979,6 +1972,16 @@
         root.style.setProperty("--preview-mobile-height", `${Math.floor(a4Height * scale)}px`);
       }
 
+      function preparePrintRoot() {
+        renderPreview();
+        const source = document.querySelector(".preview-zone .a4-page");
+        const target = document.getElementById("printRoot");
+        if (!source || !target) return;
+        const clone = source.cloneNode(true);
+        clone.querySelectorAll("[id]").forEach((element) => element.removeAttribute("id"));
+        target.replaceChildren(clone);
+      }
+
       function render() {
         updatePreviewScale();
         document.querySelectorAll("[data-key]").forEach((field) => {
@@ -2183,6 +2186,7 @@
       });
 
       document.getElementById("printButton").addEventListener("click", () => {
+        preparePrintRoot();
         window.print();
       });
 
@@ -2218,6 +2222,7 @@
 
       window.addEventListener("resize", updatePreviewScale);
       window.addEventListener("orientationchange", updatePreviewScale);
+      window.addEventListener("beforeprint", preparePrintRoot);
 
       render();
     </script>
