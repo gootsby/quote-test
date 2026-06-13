@@ -213,8 +213,12 @@
         display: block;
         min-width: 0;
         max-width: 100%;
-        -webkit-appearance: none;
-        appearance: none;
+        color-scheme: light;
+      }
+
+      .field input[type="date"]::-webkit-calendar-picker-indicator {
+        display: block;
+        opacity: 1;
       }
 
       .serial-control {
