@@ -468,6 +468,11 @@
         place-items: start center;
       }
 
+      .preview-page-wrap {
+        width: 210mm;
+        min-height: 297mm;
+      }
+
       .a4-page {
         position: relative;
         display: flex;
@@ -904,6 +909,8 @@
           height: auto;
           min-height: 100vh;
           justify-content: start;
+          max-width: 100vw;
+          overflow-x: hidden;
         }
       }
 
@@ -973,10 +980,37 @@
           grid-template-columns: 36px minmax(0, 1fr) 36px;
         }
 
+        .preview-zone {
+          width: 100%;
+          max-width: 100vw;
+          justify-items: center;
+        }
+
+        .preview-page-wrap {
+          width: var(--preview-mobile-width, 100.8mm);
+          min-height: var(--preview-mobile-height, 142.56mm);
+        }
+
         .a4-page {
-          transform: scale(0.48);
+          transform: none;
           transform-origin: top left;
-          margin-bottom: -154mm;
+          zoom: var(--preview-scale, 0.48);
+          margin-bottom: 0;
+        }
+
+        @supports not (zoom: 1) {
+          .preview-page-wrap {
+            position: relative;
+            overflow: hidden;
+          }
+
+          .a4-page {
+            position: absolute;
+            top: 0;
+            left: 0;
+            transform: scale(var(--preview-scale, 0.48));
+            zoom: 1;
+          }
         }
       }
 
@@ -1018,6 +1052,11 @@
           padding: 0;
         }
 
+        .preview-page-wrap {
+          width: 210mm;
+          min-height: 297mm;
+        }
+
         .a4-page {
           width: 210mm;
           height: auto;
@@ -1026,6 +1065,7 @@
           margin: 0;
           padding: 18mm;
           transform: none;
+          zoom: 1;
           box-shadow: none;
           overflow: visible;
           break-after: auto;
@@ -1194,6 +1234,7 @@
       </aside>
 
       <section class="preview-zone" aria-label="A4 견적서 미리보기">
+        <div class="preview-page-wrap">
         <article class="a4-page">
           <header class="quote-header">
             <div class="quote-identity">
@@ -1234,6 +1275,7 @@
             <p class="notice" id="previewNote"></p>
           </footer>
         </article>
+        </div>
       </section>
     </main>
 
@@ -1911,7 +1953,27 @@
         });
       }
 
+      function updatePreviewScale() {
+        const root = document.documentElement;
+        if (!window.matchMedia("(max-width: 760px)").matches) {
+          root.style.removeProperty("--preview-scale");
+          root.style.removeProperty("--preview-mobile-width");
+          root.style.removeProperty("--preview-mobile-height");
+          return;
+        }
+
+        const mmToPx = 96 / 25.4;
+        const a4Width = 210 * mmToPx;
+        const a4Height = 297 * mmToPx;
+        const availableWidth = Math.max(280, window.innerWidth - 36);
+        const scale = Math.min(0.48, availableWidth / a4Width);
+        root.style.setProperty("--preview-scale", scale.toFixed(4));
+        root.style.setProperty("--preview-mobile-width", `${Math.floor(a4Width * scale)}px`);
+        root.style.setProperty("--preview-mobile-height", `${Math.floor(a4Height * scale)}px`);
+      }
+
       function render() {
+        updatePreviewScale();
         document.querySelectorAll("[data-key]").forEach((field) => {
           field.value = getValue(field.dataset.key) || "";
           if (field.dataset.placeholder) {
@@ -2146,6 +2208,9 @@
         });
         reader.readAsText(file);
       });
+
+      window.addEventListener("resize", updatePreviewScale);
+      window.addEventListener("orientationchange", updatePreviewScale);
 
       render();
     </script>
