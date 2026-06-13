@@ -210,6 +210,7 @@
       }
 
       .field input[type="date"] {
+        box-sizing: border-box;
         display: block;
         width: 100%;
         inline-size: 100%;
@@ -244,11 +245,6 @@
 
       .serial-control input {
         text-align: center;
-      }
-
-      .date-field,
-      .date-field .clearable-input {
-        overflow: hidden;
       }
 
       .clearable-input {
@@ -924,7 +920,15 @@
         }
 
         .field input[type="date"] {
-          padding-right: 10px;
+          width: calc(100% - 1px);
+          inline-size: calc(100% - 1px);
+          padding-right: 12px;
+          text-align: center;
+        }
+
+        .field input[type="date"]::-webkit-date-and-time-value {
+          text-align: center;
+          min-width: 0;
         }
 
         .serial-control {
