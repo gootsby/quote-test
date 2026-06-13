@@ -184,6 +184,10 @@
         gap: 7px;
       }
 
+      .date-field {
+        position: relative;
+      }
+
       .field span {
         color: var(--ui-secondary);
         font-size: 11px;
@@ -920,15 +924,49 @@
         }
 
         .field input[type="date"] {
-          width: calc(100% - 1px);
-          inline-size: calc(100% - 1px);
-          padding-right: 12px;
+          -webkit-appearance: none;
+          appearance: none;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 100%;
+          inline-size: 100%;
+          min-inline-size: 0;
+          max-inline-size: 100%;
+          height: 48px;
+          line-height: 1.2;
+          padding-right: 40px;
           text-align: center;
         }
 
         .field input[type="date"]::-webkit-date-and-time-value {
+          display: block;
+          width: 100%;
           text-align: center;
           min-width: 0;
+        }
+
+        .field input[type="date"]::-webkit-calendar-picker-indicator {
+          position: absolute;
+          inset: 0;
+          width: 100%;
+          height: 100%;
+          margin: 0;
+          padding: 0;
+          opacity: 0;
+        }
+
+        .quote-date-field::after {
+          content: "";
+          position: absolute;
+          right: 14px;
+          bottom: 15px;
+          width: 15px;
+          height: 15px;
+          border: 1.6px solid #6e6e73;
+          border-radius: 4px;
+          box-shadow: inset 0 4px 0 rgba(110, 110, 115, 0.24);
+          pointer-events: none;
         }
 
         .serial-control {
@@ -1038,7 +1076,7 @@
                 <option value="sgdc">에스지디씨</option>
               </select>
             </label>
-            <label class="field date-field"><span>견적일</span><input type="date" data-key="dateValue" /></label>
+            <label class="field date-field quote-date-field"><span>견적일</span><input type="date" data-key="dateValue" /></label>
             <label class="field">
               <span>견적번호</span>
               <div class="serial-control">
